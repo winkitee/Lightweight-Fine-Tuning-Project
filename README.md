@@ -6,7 +6,7 @@ This project fine-tunes the GPT-2 model using Parameter-Efficient Fine-Tuning (P
 
 Run the following command to install all dependencies:
 ```
-pip install torch transformers datasets evaluate peft
+pip install torch transformers datasets evaluate scikit-learn peft
 ```
 
 ## Running the Fine-Tuning Script

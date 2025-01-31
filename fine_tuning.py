@@ -70,7 +70,7 @@ eval_trainer = Trainer(
     model=pretrained_model,
     args=eval_args,
     data_collator=data_collator,
-    processing_class=tokenizer,
+    tokenizer=tokenizer,
     compute_metrics=compute_metrics,
 )
 
@@ -83,7 +83,8 @@ print(f"Pretrained Model Accuracy: {pretrained_eval_result['eval_accuracy']}")
 from peft import (
     LoraConfig,
     TaskType,
-    get_peft_model
+    get_peft_model,
+    AutoPeftModelForSequenceClassification,
 )
 
 config = LoraConfig(
@@ -107,8 +108,6 @@ training_args = TrainingArguments(
     eval_strategy="epoch",
     logging_steps=500,
     save_strategy="epoch",
-    gradient_accumulation_steps=2,
-    fp16=True,
 )
 
 trainer_lora = Trainer(
@@ -116,7 +115,7 @@ trainer_lora = Trainer(
     args=training_args,
     train_dataset=train_tokenized_dataset,
     eval_dataset=test_tokenized_dataset,
-    processing_class=tokenizer,
+    tokenizer=tokenizer,
     data_collator=data_collator,
     compute_metrics=compute_metrics,
 )
@@ -130,7 +129,7 @@ print(f"PEFT LoRA '{peft_save_directory}' model saved.")
 
 # Performing Inference with a PEFT Model
 
-inference_model = AutoModelForSequenceClassification.from_pretrained(peft_save_directory).to(device)
+inference_model = AutoPeftModelForSequenceClassification.from_pretrained(peft_save_directory).to(device)
 inference_model.config.pad_token_id = tokenizer.eos_token_id
 
 inference_eval_args = TrainingArguments(
@@ -142,7 +141,7 @@ inference_trainer = Trainer(
     model=inference_model,
     args=inference_eval_args,
     data_collator=data_collator,
-    processing_class=tokenizer,
+    tokenizer=tokenizer,
     compute_metrics=compute_metrics,
 )
 
